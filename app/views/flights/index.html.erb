@@ -1,0 +1,24 @@
+<%= form_with url: "/flights", method: :get do |f| %>
+    <%= f.collection_select :departure_code, Airport.order(:code), :id, :code , {selected: params.fetch(:departure_code, {})}%>
+
+    <%= f.collection_select :arrival_code, Airport.order(:code), :id, :code, {selected: params.fetch(:arrival_code, {})} %>
+
+    <% dates =  Flight.get_distinct_flight_dates%>
+    <%= f.select :dates, dates, {selected: params.fetch(:dates, {})} %>
+
+
+    <%= f.select :tickets, ["1", "2", "3", "4"], {selected: params.fetch(:tickets, {})}%>
+
+    <%= f.submit "Submit"%>
+<% end %><br />
+
+<% flash.each do |type, msg| %>
+    <%= msg %><br />
+<% end %>
+
+<% @flights.each do |flight| %>
+    <%= flight.departure_airport.code %>
+    <%= flight.arrival_airport.code %>
+    <%= Flight.flight_date_formatted(flight.start) %>
+    <%= flight.duration %><br />
+<% end %>
