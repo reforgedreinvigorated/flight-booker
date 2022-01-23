@@ -1,13 +1,12 @@
 <%= form_with url: "/flights", method: :get do |f| %>
-    <%= f.collection_select :departure_code, Airport.order(:code), :id, :code , {selected: params.fetch(:departure_code, {})}%>
+    <%= f.collection_select :departure_code, Airport.order(:code), :id, :code , :include_blank => "Origin", selected: params.fetch(:departure_code, {})%>
 
-    <%= f.collection_select :arrival_code, Airport.order(:code), :id, :code, {selected: params.fetch(:arrival_code, {})} %>
+    <%= f.collection_select :arrival_code, Airport.order(:code), :id, :code, :include_blank => "Destination", selected: params.fetch(:arrival_code, {}) %>
 
     <% dates =  Flight.get_distinct_flight_dates%>
-    <%= f.select :dates, dates, {selected: params.fetch(:dates, {})} %>
+    <%= f.select :dates, dates, {:include_blank => "Flight Date"}%>
 
-
-    <%= f.select :tickets, ["1", "2", "3", "4"], {selected: params.fetch(:tickets, {})}%>
+    <%= f.select :tickets, ["1", "2", "3", "4"], :include_blank => "Passengers"%>
 
     <%= f.submit "Submit"%>
 <% end %><br />
@@ -17,8 +16,14 @@
 <% end %>
 
 <% @flights.each do |flight| %>
+
     <%= flight.departure_airport.code %>
     <%= flight.arrival_airport.code %>
     <%= Flight.flight_date_formatted(flight.start) %>
-    <%= flight.duration %><br />
+
+    <% total_minutes = flight.duration / 60 %>
+    <% hours = total_minutes / 60%>
+    <% minutes = total_minutes % 60 %>
+
+    <%= hours %> Hours <%= minutes%> Minutes <br />
 <% end %>

@@ -1,19 +1,14 @@
 class FlightsController < ApplicationController
     def index
-        if !params[:departure_code] and !params[:arrival_code] and !params[:date]
-            @flights = Flight.order(:date)
-        else
-            departure_id = Airport.find(params[:departure_code]).id
-            arrival_id = Airport.find(params[:arrival_code]).id 
-            @flights = Flight.where("departure_airport_id = ? and arrival_airport_id = ? and start like ?", departure_id, arrival_id, "%" + params[:dates] + "%")
-            
-            if @flights.count <= 0
-                flash[:notice] = "No flights were found"
-            elsif @flights.count == 1
-                flash[:notice] = "1 Flight was found"
-            else
-                flash[:notice] = "#{@flights.count} flights were found"
-            end
+        flash.discard
+        @flights = Flight.all
+
+        if !empty_params
+            @flights = @flights.where(departure_airport_id: params[:departure_code]) if !params[:departure_code].empty?
+
+            @flights = @flights.where(arrival_airport_id: params[:arrival_code]) if !params[:arrival_code].empty?
+
+            @flights = @flights.where("start like ?", "%" + params[:dates] + "%") if !params[:dates].empty?
         end
     end
 
@@ -21,4 +16,8 @@ class FlightsController < ApplicationController
         params.require(:flight).permit(:arrival_airport_id, :departure_airport_id, :start, :duration)
     end
 
+    def empty_params
+        (params[:departure_code].nil? and params[:arrival_code].nil? and params[:dates].nil?) or 
+        (params[:departure_code].empty? and params[:arrival_code].empty? and params[:dates].empty?)
+    end
 end

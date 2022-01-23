@@ -6,8 +6,8 @@
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
 #reset databases
-Airport.delete_all
 Flight.delete_all
+Airport.delete_all
 
 codes = ["BHM", "SFO", "NYC", "DHN", "MRI", "SNA", "DEN", "AUS"]
 
@@ -15,20 +15,24 @@ codes.each do |code|
     Airport.create!(code: code)
 end
 
-#create 3 flights
-# arriving in SFO, NYC, DHN
-# departing from MRI, BHM, AUS
+codes.each_with_index do |code, idx|
+    i = 0
+    rand_flight_count = rand(1..12)
+    starttime = DateTime.now + rand(1..365).days 
+    while i < rand_flight_count
+        duration = rand(1800..10800)
+    
+        rand_airport = rand(0...codes.length)
+        until rand_airport != idx
+            rand_airport = rand(0...codes.length)
+        end
+        arrival_id = Airport.find_by("code = ?", codes[rand_airport]).id
+        departure_id = Airport.find_by("code = ?", code).id
+    
 
-arrival = ["SFO", "NYC", "DHN"]
-departure = ["MRI", "BHM", "AUS"]
-
-arrival.each_with_index do |code, i|
-    starttime = DateTime.now + rand(1..21).days 
-    duration = rand(1800..10800)
-    arrival_id = Airport.find_by("code = ?", arrival[i]).id
-    departure_id = Airport.find_by("code = ?", departure[i]).id
-
-    Flight.create!(arrival_airport_id: arrival_id, departure_airport_id: departure_id, start: starttime, duration: duration)
+        Flight.create!(arrival_airport_id: arrival_id, departure_airport_id: departure_id, start: starttime, duration: duration)
+        i += 1
+    end
 end
 
 
