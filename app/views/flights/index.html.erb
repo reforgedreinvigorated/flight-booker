@@ -4,9 +4,9 @@
     <%= f.collection_select :arrival_code, Airport.order(:code), :id, :code, :include_blank => "Destination", selected: params.fetch(:arrival_code, {}) %>
 
     <% dates =  Flight.get_distinct_flight_dates%>
-    <%= f.select :dates, dates, {:include_blank => "Flight Date"}%>
+    <%= f.select :dates, dates, :include_blank => "Flight Date", selected: params.fetch(:dates, {}) %>
 
-    <%= f.select :tickets, ["1", "2", "3", "4"], :include_blank => "Passengers"%>
+    <%= f.select :tickets, ["1", "2", "3", "4"], :include_blank => "Passengers", selected: params.fetch(:tickets, {}) %>
 
     <%= f.submit "Submit"%>
 <% end %><br />
@@ -15,8 +15,9 @@
     <%= msg %><br />
 <% end %>
 
-<% @flights.each do |flight| %>
 
+<% @flights.each do |flight| %>
+    
     <%= flight.departure_airport.code %>
     <%= flight.arrival_airport.code %>
     <%= Flight.flight_date_formatted(flight.start) %>
@@ -25,5 +26,12 @@
     <% hours = total_minutes / 60%>
     <% minutes = total_minutes % 60 %>
 
-    <%= hours %> Hours <%= minutes%> Minutes <br />
+    <%= hours %> Hours <%= minutes%> Minutes
+
+    <%= form_with url: "/flights", method: :get do |f| %>
+        <%= f.hidden_field :tickets, value: params[:tickets]%>
+        <%= f.hidden_field :flight_id, value: flight.id%>
+        <%= f.submit "Book Flight" %>
+    <% end %>
+
 <% end %>

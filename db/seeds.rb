@@ -14,19 +14,24 @@ codes = ["BHM", "SFO", "NYC", "DHN", "MRI", "SNA", "DEN", "AUS"]
 codes.each do |code|
     Airport.create!(code: code)
 end
+flightdates = []
+
+codes.length.times do
+    flightdates.push(DateTime.now + rand(1..365).days)
+end
 
 codes.each_with_index do |code, idx|
     i = 0
     rand_flight_count = rand(1..12)
-    starttime = DateTime.now + rand(1..365).days 
     while i < rand_flight_count
         duration = rand(1800..10800)
     
-        rand_airport = rand(0...codes.length)
-        until rand_airport != idx
-            rand_airport = rand(0...codes.length)
+        j = rand(0...codes.length)
+        until j != idx
+            j = rand(0...codes.length)
         end
-        arrival_id = Airport.find_by("code = ?", codes[rand_airport]).id
+        starttime = flightdates[j]
+        arrival_id = Airport.find_by("code = ?", codes[j]).id
         departure_id = Airport.find_by("code = ?", code).id
     
 
