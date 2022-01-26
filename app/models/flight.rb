@@ -12,4 +12,11 @@ class Flight < ApplicationRecord
         date.strftime("%Y-%m-%d")
     end
 
+    def self.duration_formatted(duration)
+        total_minutes = duration / 60
+        hours = total_minutes / 60
+        minutes = total_minutes % 60
+
+        "#{hours} Hours " + "#{minutes} Minutes"
+    end
 end

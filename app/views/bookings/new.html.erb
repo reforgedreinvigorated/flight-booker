@@ -1,0 +1,24 @@
+<% if flash %>
+    <% flash.each do |type, msg| %>
+        <%= msg %><br>
+    <% end %>
+<% end %>
+<div>
+    <%= @flight.departure_airport.code %>
+    <%= @flight.arrival_airport.code %>
+    <%= Flight.flight_date_formatted(@flight.start) %>
+   <%= Flight.duration_formatted(@flight.duration) %>
+</div>
+<%= form_for @booking, url: "/bookings", method: :post do |f| %>
+    
+    <h4>Passenger Information</h4>
+
+        <%= f.fields_for :passengers do |passenger_builder| %>
+            <%= passenger_builder.label :name %>
+            <%= passenger_builder.text_field :name %>
+            <%= passenger_builder.label :email %>
+            <%= passenger_builder.text_field :email %><br>
+        <% end %>
+    <%= f.hidden_field :flight_id, value: @flight.id%>
+    <%= f.submit%>
+<% end %>

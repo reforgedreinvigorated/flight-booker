@@ -15,23 +15,20 @@
     <%= msg %><br />
 <% end %>
 
+<% if @flights%>
+    <% @flights.each do |flight| %>
+        
+        <%= flight.departure_airport.code %>
+        <%= flight.arrival_airport.code %>
+        <%= Flight.flight_date_formatted(flight.start) %>
 
-<% @flights.each do |flight| %>
-    
-    <%= flight.departure_airport.code %>
-    <%= flight.arrival_airport.code %>
-    <%= Flight.flight_date_formatted(flight.start) %>
+        <%= Flight.duration_formatted(flight.duration)%>
 
-    <% total_minutes = flight.duration / 60 %>
-    <% hours = total_minutes / 60%>
-    <% minutes = total_minutes % 60 %>
+        <%= form_with url: "/bookings/new", method: :get do |f| %>
+            <%= f.hidden_field :tickets, value: params[:tickets]%>
+            <%= f.hidden_field :flight_id, value: flight.id%>
+            <%= f.submit "Book Flight" %>
+        <% end %>
 
-    <%= hours %> Hours <%= minutes%> Minutes
-
-    <%= form_with url: "/flights", method: :get do |f| %>
-        <%= f.hidden_field :tickets, value: params[:tickets]%>
-        <%= f.hidden_field :flight_id, value: flight.id%>
-        <%= f.submit "Book Flight" %>
     <% end %>
-
 <% end %>
